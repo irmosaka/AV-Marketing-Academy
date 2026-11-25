@@ -188,8 +188,8 @@ footer{text-align:center;color:var(--muted);font-size:10px;padding:30px}
   <p>به مرکز دانش و توسعه مهارت‌های تخصصی خوش آمدید.<br>برای ورود، اطلاعات کاربری خود را وارد کنید.</p>
   <form id="loginForm">
    <div class="field">
-    <label>نام کاربری</label>
-    <input id="username" autocomplete="username" placeholder="نام کاربری">
+    <label>ایمیل سازمانی</label>
+    <input id="email" type="email" autocomplete="username" placeholder="name@company.com" required>
    </div>
    <div class="field">
     <label>رمز عبور</label>
@@ -198,7 +198,7 @@ footer{text-align:center;color:var(--muted);font-size:10px;padding:30px}
    <button class="btn full" type="submit">ورود به آکادمی ←</button>
    <div id="loginError" class="login-error"></div>
   </form>
-  <div class="demo-note">نسخه آزمایشی: نام کاربری و رمز عبور هر دو 931043 هستند. این ورود امنیت واقعی ندارد.</div>
+  <div class="demo-note">ورود با ایمیل سازمانی و رمز عبور اختصاصی انجام می‌شود. برای دریافت یا بازیابی دسترسی با مدیر آکادمی تماس بگیرید.</div>
  </div>
 </section>
 
@@ -349,6 +349,8 @@ footer{text-align:center;color:var(--muted);font-size:10px;padding:30px}
 
 <div id="toastContainer"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
 const courses=[
  {id:"tv",title:"دانش تخصصی تلویزیون و نمایشگر",icon:"📺",desc:"شناخت پنل، فناوری تصویر، HDR، پردازش تصویر و نمایشگرهای حرفه‌ای.",category:"tv",lessons:[
@@ -458,24 +460,66 @@ function showToast(msg){
  document.getElementById("toastContainer").appendChild(t);
  setTimeout(()=>t.remove(),2800);
 }
-function login(){
+let supabaseClient = null;
+let currentUser = null;
+let currentUserRole = "learner";
+
+function showLoginError(message){
+ document.getElementById("loginError").textContent = message;
+}
+async function login(user){
+ currentUser = user;
+ const { data: profileData, error: profileError } = await supabaseClient
+  .from("profiles").select("display_name,role").eq("id",user.id).maybeSingle();
+ if(profileError) console.error("Profile lookup failed:",profileError);
+ currentUserRole = profileData?.role || "learner";
+ const displayName = profileData?.display_name || user.user_metadata?.name || user.email || "کاربر آکادمی";
+ document.querySelector(".user-mini strong").textContent = displayName;
+ document.querySelector(".user-mini small").textContent = currentUserRole === "admin" ? "مدیر آکادمی" : "عضو مسیر یادگیری";
+ document.querySelector('[data-page="admin"]').style.display = currentUserRole === "admin" ? "flex" : "none";
  document.getElementById("login").classList.add("hidden");
  document.getElementById("app").classList.remove("hidden");
  renderAll();
 }
-document.getElementById("loginForm").addEventListener("submit",e=>{
+async function initializeAcademyAuth(){
+ if(!window.SUPABASE_CONFIG || !window.supabase?.createClient){
+  showLoginError("اتصال سامانه کامل بارگذاری نشده است. صفحه را تازه‌سازی کنید.");
+  return;
+ }
+ supabaseClient = window.supabase.createClient(
+  window.SUPABASE_CONFIG.url,
+  window.SUPABASE_CONFIG.anonKey
+ );
+ const { data, error } = await supabaseClient.auth.getSession();
+ if(error){showLoginError("بررسی نشست کاربری ناموفق بود.");return;}
+ if(data.session?.user) await login(data.session.user);
+}
+document.getElementById("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();
- const u=document.getElementById("username").value;
- const p=document.getElementById("password").value;
- if(u==="931043"&&p==="931043"){sessionStorage.setItem("avDemoLogin","1");login()}
- else document.getElementById("loginError").textContent="نام کاربری یا رمز عبور صحیح نیست.";
+ const email = document.getElementById("email").value.trim();
+ const password = document.getElementById("password").value;
+ const button = e.currentTarget.querySelector('button[type="submit"]');
+ button.disabled = true;
+ button.textContent = "در حال بررسی...";
+ showLoginError("");
+ const { data, error } = await supabaseClient.auth.signInWithPassword({email,password});
+ button.disabled = false;
+ button.textContent = "ورود به آکادمی ←";
+ if(error){
+  showLoginError("ورود انجام نشد؛ ایمیل و رمز عبور را بررسی کنید.");
+  return;
+ }
+ await login(data.user);
 });
-if(sessionStorage.getItem("avDemoLogin")==="1")login();
-document.getElementById("logout").onclick=()=>{
- sessionStorage.removeItem("avDemoLogin");
+document.getElementById("logout").onclick=async()=>{
+ await supabaseClient.auth.signOut();
+ currentUser = null;
+ currentUserRole = "learner";
  document.getElementById("app").classList.add("hidden");
  document.getElementById("login").classList.remove("hidden");
+ document.getElementById("password").value = "";
 };
+initializeAcademyAuth();
 document.getElementById("menuBtn").onclick=()=>document.getElementById("sidebar").classList.toggle("open");
 
 const pageNames={
