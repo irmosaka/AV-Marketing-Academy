@@ -1,0 +1,666 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101a32">
+<title>AV & Marketing Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#f4f6fa;
+  --surface:#ffffff;
+  --navy:#101a32;
+  --navy2:#182746;
+  --blue:#3159a5;
+  --cyan:#28a9bd;
+  --text:#172238;
+  --muted:#778196;
+  --line:#e5e9f0;
+  --green:#16866a;
+  --radius:17px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Vazirmatn,sans-serif;line-height:1.85
+}
+button,input{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.hidden{display:none!important}
+
+/* LOGIN */
+#login{
+  min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:20px;
+  background:radial-gradient(circle at 15% 15%,#244a82,#101a32 65%);
+}
+.login-box{
+  width:100%;max-width:390px;background:white;
+  padding:35px;border-radius:24px;text-align:center;
+  box-shadow:0 25px 80px #0005
+}
+.logo{
+  width:65px;height:65px;border-radius:19px;
+  display:grid;place-items:center;margin:auto auto 18px;
+  background:linear-gradient(135deg,#3159a5,#28a9bd);
+  color:white;font-weight:800;font-size:21px
+}
+.login-box h1{font-size:23px;margin:0}
+.login-box p{color:var(--muted);font-size:13px}
+.login-box input{
+  width:100%;padding:13px;margin:8px 0;
+  border:1px solid var(--line);border-radius:11px;
+  outline:none;background:#fafbfe
+}
+.login-box input:focus{border-color:var(--blue)}
+.primary{
+  width:100%;border:0;border-radius:11px;padding:13px;
+  background:var(--blue);color:white;font-weight:700;margin-top:12px
+}
+.error{color:#bd4545;font-size:13px;min-height:24px}
+
+/* APP */
+#app{min-height:100vh}
+.topbar{
+  height:66px;background:var(--navy);color:white;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 25px;position:sticky;top:0;z-index:20
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800}
+.brand-icon{
+  width:36px;height:36px;border-radius:11px;
+  background:linear-gradient(135deg,#3159a5,#28a9bd);
+  display:grid;place-items:center;font-size:12px
+}
+.top-actions{display:flex;align-items:center;gap:15px}
+.top-actions button{
+  color:white;background:#ffffff16;border:1px solid #ffffff22;
+  border-radius:9px;padding:7px 12px;font-size:12px
+}
+.layout{display:flex;min-height:calc(100vh - 66px)}
+.sidebar{
+  width:255px;background:var(--navy2);color:white;
+  padding:22px 14px;flex-shrink:0
+}
+.side-label{
+  color:#8295b5;font-size:11px;font-weight:700;
+  padding:17px 12px 7px
+}
+.nav-item{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:11px 13px;border:0;border-radius:10px;
+  background:transparent;color:#d4dced;text-align:right;
+  font-size:13px;margin:3px 0
+}
+.nav-item:hover,.nav-item.active{background:#ffffff17;color:white}
+.nav-icon{width:22px;text-align:center;font-size:17px}
+.content{flex:1;min-width:0;padding:28px 34px 70px}
+.mobile-menu{display:none}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:15px}
+.page-title{font-size:27px;font-weight:800;margin:0 0 6px}
+.page-subtitle{font-size:13px;color:var(--muted);margin:0 0 25px}
+.hero{
+  background:linear-gradient(115deg,#14264b,#3159a5 70%,#238caa);
+  color:white;padding:30px;border-radius:22px;
+  position:relative;overflow:hidden;margin-bottom:25px
+}
+.hero:after{
+  content:"AV";position:absolute;left:25px;top:-50px;
+  font-size:170px;font-weight:800;color:#ffffff0b
+}
+.hero h2{font-size:24px;margin:0 0 8px;position:relative;z-index:1}
+.hero p{font-size:13px;color:#d9e6fa;max-width:650px;position:relative;z-index:1}
+.hero-tag{font-size:11px;background:#ffffff20;padding:5px 11px;border-radius:20px}
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin:20px 0 28px
+}
+.stat,.card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:19px
+}
+.stat strong{font-size:25px;color:var(--blue);display:block}
+.stat span{font-size:12px;color:var(--muted)}
+.section-title{font-size:17px;font-weight:800;margin:30px 0 14px}
+.grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px
+}
+.card{transition:.2s;cursor:pointer}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 30px #1b315010}
+.card-icon{
+  width:43px;height:43px;border-radius:13px;
+  display:grid;place-items:center;font-size:21px;
+  background:#edf2fc;margin-bottom:12px
+}
+.card h3{font-size:15px;margin:0 0 6px}
+.card p{font-size:12px;color:var(--muted);margin:0 0 12px}
+.card-foot{
+  display:flex;justify-content:space-between;
+  align-items:center;font-size:11px;color:var(--muted)
+}
+.pill{
+  background:#edf3ff;color:#3159a5;
+  padding:3px 9px;border-radius:20px;font-size:10px
+}
+.search-wrap{margin:20px 0}
+.search{
+  width:100%;padding:13px 17px;border:1px solid var(--line);
+  border-radius:12px;background:white;outline:none
+}
+.search:focus{border-color:var(--blue)}
+.lesson{
+  background:white;border:1px solid var(--line);
+  border-radius:18px;padding:26px;max-width:900px
+}
+.lesson h2{font-size:22px;margin-top:0}
+.lesson h3{font-size:17px;color:var(--blue);margin-top:25px}
+.lesson p,.lesson li{font-size:14px}
+.lesson-callout{
+  background:#edf5ff;border-right:4px solid var(--cyan);
+  padding:14px 17px;border-radius:10px;margin:17px 0
+}
+.lesson-warning{
+  background:#fff7e8;border-right:4px solid #e7b54e;
+  padding:14px 17px;border-radius:10px;margin:17px 0
+}
+.lesson-nav{
+  display:flex;gap:10px;margin-top:20px;flex-wrap:wrap
+}
+.lesson-nav button{
+  border:0;background:var(--blue);color:white;
+  border-radius:9px;padding:10px 15px
+}
+.secondary{background:#eaf0fb!important;color:#284b88!important}
+.quiz-option{
+  display:block;width:100%;text-align:right;padding:12px;
+  border:1px solid var(--line);border-radius:10px;
+  margin:8px 0;background:white
+}
+.quiz-option:hover{border-color:var(--blue)}
+.footer-note{font-size:11px;color:var(--muted);margin-top:35px}
+.empty{padding:35px;text-align:center;color:var(--muted)}
+@media(max-width:900px){
+ .sidebar{width:220px}.content{padding:24px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .topbar{padding:0 14px;height:58px}
+ .brand{font-size:13px}
+ .mobile-menu{display:block}
+ .layout{display:block}
+ .sidebar{
+  display:none;position:fixed;z-index:30;top:58px;
+  bottom:0;right:0;width:270px;overflow:auto;
+  box-shadow:-20px 0 50px #0003
+ }
+ .sidebar.open{display:block}
+ .content{padding:20px 15px 60px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .stats{gap:8px}
+ .stat{padding:12px}
+ .stat strong{font-size:20px}
+ .grid{grid-template-columns:1fr}
+ .page-title{font-size:22px}
+ .lesson{padding:19px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+ <div class="login-box">
+  <div class="logo">AV+</div>
+  <h1>AV & Marketing Academy</h1>
+  <p>پرتال تخصصی آموزش محصول و بازاریابی</p>
+  <form id="loginForm">
+   <input id="username" placeholder="نام کاربری" autocomplete="username" required>
+   <input id="password" type="password" placeholder="رمز عبور" autocomplete="current-password" required>
+   <button class="primary" type="submit">ورود به پرتال</button>
+   <div id="loginError" class="error"></div>
+  </form>
+  <p>نسخه آزمایشی پرتال آموزشی</p>
+ </div>
+</section>
+
+<!-- APPLICATION -->
+<div id="app" class="hidden">
+ <header class="topbar">
+  <div class="brand">
+   <button class="mobile-menu" onclick="toggleMenu()">☰</button>
+   <div class="brand-icon">AV+</div>
+   <span>AV & Marketing Academy</span>
+  </div>
+  <div class="top-actions">
+   <span style="font-size:12px">آکادمی تخصصی</span>
+   <button onclick="logout()">خروج</button>
+  </div>
+ </header>
+
+ <div class="layout">
+  <aside class="sidebar" id="sidebar">
+   <div class="side-label">داشبورد</div>
+   <button class="nav-item active" onclick="showHome()">
+    <span class="nav-icon">⌂</span> صفحه اصلی
+   </button>
+
+   <div class="side-label">PRODUCT ACADEMY</div>
+   <button class="nav-item" onclick="showCategory('video')"><span class="nav-icon">▣</span> فناوری‌های تصویر</button>
+   <button class="nav-item" onclick="showCategory('audio')"><span class="nav-icon">♫</span> فناوری‌های صوتی</button>
+   <button class="nav-item" onclick="showCategory('tv')"><span class="nav-icon">▤</span> تلویزیون و نمایشگر</button>
+   <button class="nav-item" onclick="showCategory('platform')"><span class="nav-icon">◈</span> سیستم‌عامل و پلتفرم</button>
+
+   <div class="side-label">MARKETING ACADEMY</div>
+   <button class="nav-item" onclick="showCategory('brand')"><span class="nav-icon">◎</span> مدیریت برند</button>
+   <button class="nav-item" onclick="showCategory('product')"><span class="nav-icon">◉</span> مدیریت محصول</button>
+   <button class="nav-item" onclick="showCategory('research')"><span class="nav-icon">⌕</span> تحقیقات بازار</button>
+   <button class="nav-item" onclick="showCategory('campaign')"><span class="nav-icon">✳</span> کمپین و تبلیغات</button>
+
+   <div class="side-label">SALES & EXPERIENCE</div>
+   <button class="nav-item" onclick="showCategory('sales')"><span class="nav-icon">♧</span> آموزش فروش و سیلزتاک</button>
+   <button class="nav-item" onclick="showCategory('comparison')"><span class="nav-icon">⇄</span> تحلیل و مقایسه رقبا</button>
+
+   <div class="side-label">ابزارهای یادگیری</div>
+   <button class="nav-item" onclick="showQuiz()"><span class="nav-icon">✓</span> آزمون دانش محصول</button>
+   <button class="nav-item" onclick="showSources()"><span class="nav-icon">▤</span> منابع و مستندات</button>
+  </aside>
+
+  <main class="content" id="mainContent"></main>
+ </div>
+</div>
+
+<script>
+/* DEMO ACCESS ONLY - NOT SECURE AUTHENTICATION */
+const DEMO_USER = "931043";
+const DEMO_PASS = "931043";
+
+const lessons = [
+ {
+  id:"hdr",cat:"video",icon:"🌈",title:"HDR چیست؟",
+  desc:"درک محدوده دینامیکی بالا با مثال‌های واقعی",
+  level:"مقدماتی",time:"۸ دقیقه",
+  body:`
+   <h2>HDR؛ جزئیات در روشنایی و تاریکی</h2>
+   <p>تصور کن در فیلمی، بازیگری کنار پنجره ایستاده و بیرون پنجره آفتاب شدیدی می‌تابد. در تصویر معمولی ممکن است بیرون پنجره کاملاً سفید شود یا برای دیدن بیرون، صورت بازیگر بیش از حد تاریک شود.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> HDR کمک می‌کند هم جزئیات آسمان روشن پشت پنجره را ببینی و هم چهره بازیگر و سایه‌های داخل اتاق را بهتر تشخیص بدهی.</div>
+   <h3>HDR دقیقاً چه می‌کند؟</h3>
+   <p>HDR مخفف High Dynamic Range است. این فناوری امکان نمایش دامنه گسترده‌تری از روشنایی و جزئیات را فراهم می‌کند؛ یعنی تفاوت میان نقاط بسیار روشن و بسیار تاریک تصویر بهتر نمایش داده می‌شود.</p>
+   <h3>HDR با روشنایی بالا یکی نیست</h3>
+   <p>روشنایی بالا به توان تولید نور نمایشگر اشاره دارد؛ اما HDR به توانایی نمایش بهتر دامنه روشنایی و جزئیات مربوط است. تلویزیون روشن‌تر الزاماً HDR بهتری ندارد.</p>
+   <div class="lesson-warning"><b>نکته بازاریابی:</b> پشتیبانی اسمی از HDR به‌تنهایی تضمین‌کننده تجربه HDR باکیفیت نیست. روشنایی پنل، کنتراست، کنترل نور پس‌زمینه و پردازش تصویر هم اهمیت دارند.</div>
+   <h3>چه چیزی به مشتری بگوییم؟</h3>
+   <p>«در صحنه‌هایی که هم بخش‌های خیلی روشن و هم سایه‌های تاریک دارند، HDR کمک می‌کند جزئیات بیشتری را در هر دو بخش ببینید.»</p>
+  `
+ },
+ {
+  id:"dolbyvision",cat:"video",icon:"🎬",title:"Dolby Vision",
+  desc:"متادیتای پویا و نمایش صحنه به صحنه",
+  level:"متوسط",time:"۱۰ دقیقه",
+  body:`
+   <h2>Dolby Vision؛ راهنمای تصویر برای هر صحنه</h2>
+   <p>فیلمی را تصور کن که از یک اتاق تاریک به ساحلی آفتابی می‌رود. هر صحنه به تنظیم متفاوتی برای نمایش نقاط روشن، سایه‌ها و رنگ‌ها نیاز دارد.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> مثل این است که به‌جای اینکه نقاش را مجبور کنی تمام تابلو را با یک میزان نور رنگ کند، برای بخش‌های مختلف تابلو راهنمای جداگانه داشته باشی.</div>
+   <h3>پشت صحنه فنی</h3>
+   <p>Dolby Vision از متادیتای پویا استفاده می‌کند. این اطلاعات راهنما می‌تواند متناسب با صحنه یا فریم تغییر کند تا نمایشگر تصویر را با توانایی‌های خودش بهتر تطبیق دهد.</p>
+   <h3>آیا Dolby Vision همیشه تصویر بهتری می‌دهد؟</h3>
+   <p>خیر. نتیجه به مسترینگ محتوا، توان پنل، روشنایی، کنتراست و پردازش تلویزیون وابسته است.</p>
+   <div class="lesson-warning"><b>نکته بازاریابی:</b> لوگوی Dolby Vision را معادل کیفیت قطعی تصویر معرفی نکنید. قابلیت فرمت و کیفیت اجرای آن دو موضوع جدا هستند.</div>
+  `
+ },
+ {
+  id:"atmos",cat:"audio",icon:"🔊",title:"Dolby Atmos",
+  desc:"صدای فراگیر و تجربه حضور در صحنه",
+  level:"مقدماتی",time:"۹ دقیقه",
+  body:`
+   <h2>Dolby Atmos؛ انگار وسط صحنه فیلم هستی!</h2>
+   <p>تصور کن در حال تماشای فیلم جنگی هستی. هلیکوپتری از سمت راست وارد صحنه می‌شود، از بالای سر شخصیت‌ها عبور می‌کند و دور می‌شود.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> به‌جای اینکه فقط صدای هلیکوپتر را از چند بلندگو بشنوی، در یک سیستم سازگار حس می‌کنی صدا در فضای اطرافت حرکت می‌کند.</div>
+   <h3>پشت صحنه فنی</h3>
+   <p>Atmos می‌تواند اطلاعات مکانی صدا را به‌صورت مبتنی بر اشیا (Object-Based) منتقل کند. سیستم پخش، این اطلاعات را متناسب با چیدمان بلندگوها بازتولید می‌کند.</p>
+   <h3>چه چیزی برای تجربه واقعی لازم است؟</h3>
+   <ul>
+    <li>محتوای دارای صدای Dolby Atmos</li>
+    <li>سرویس یا اپلیکیشن سازگار</li>
+    <li>دستگاه و مسیر انتقال صدای سازگار</li>
+    <li>سیستم بلندگوی مناسب برای بازتولید صدای فراگیر</li>
+   </ul>
+   <div class="lesson-warning"><b>نکته بازاریابی:</b> لوگوی Atmos روی تلویزیون به‌تنهایی به معنی صدای سه‌بعدی قدرتمند نیست. سیستم بلندگو و کل زنجیره پخش تعیین‌کننده‌اند.</div>
+  `
+ },
+ {
+  id:"digital",cat:"audio",icon:"🎧",title:"Dolby Digital و Digital Plus",
+  desc:"تفاوت صدای چندکاناله و فرمت‌های صوتی",
+  level:"متوسط",time:"۱۲ دقیقه",
+  body:`
+   <h2>Dolby Digital؛ صدای چندکاناله یعنی چه؟</h2>
+   <p>در یک فیلم، شخصیت از وسط حرف می‌زند، انفجار از سمت چپ رخ می‌دهد و صدای شکستن شیشه از سمت راست شنیده می‌شود.</p>
+   <div class="lesson-callout"><b>مثال:</b> در سیستم ۵.۱، پنج کانال اصلی و یک کانال ویژه فرکانس‌های بم داریم: چپ و راست جلو، مرکز، چپ و راست عقب و ساب‌ووفر.</div>
+   <h3>Dolby Digital Plus</h3>
+   <p>نسخه پیشرفته‌تری از Dolby Digital است که می‌تواند کیفیت و کارایی بهتر و کانال‌های بیشتری را پشتیبانی کند.</p>
+   <div class="lesson-warning"><b>اشتباه رایج:</b> Dolby Digital Plus همان Dolby Atmos نیست. Atmos می‌تواند روی بستر Dolby Digital Plus ارائه شود؛ این دو نام به دو مفهوم متفاوت اشاره دارند.</div>
+  `
+ },
+ {
+  id:"truehd",cat:"audio",icon:"💿",title:"Dolby TrueHD",
+  desc:"تفاوت فشرده‌سازی Lossy و Lossless",
+  level:"متوسط",time:"۷ دقیقه",
+  body:`
+   <h2>Dolby TrueHD؛ فشرده‌سازی بدون حذف اطلاعات</h2>
+   <p>فرض کن یک عکس را فشرده می‌کنی. در یک روش، بخشی از اطلاعات برای همیشه حذف می‌شود؛ در روش دیگر، فایل کوچک‌تر می‌شود اما اطلاعات اصلی قابل بازیابی باقی می‌ماند.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> Dolby TrueHD مانند روش دوم است؛ یک فرمت صوتی Lossless که در فشرده‌سازی، اطلاعات صوتی را به شکل غیرقابل‌بازگشت حذف نمی‌کند.</div>
+   <p>این فرمت برای علاقه‌مندان سینمای خانگی و محتوای باکیفیت اهمیت دارد. برای شنیدن خروجی کامل، منبع، اتصال و سیستم صوتی باید از آن پشتیبانی کنند.</p>
+  `
+ },
+ {
+  id:"google",cat:"platform",icon:"📺",title:"Google TV چیست؟",
+  desc:"تجربه کاربری محتوامحور در تلویزیون",
+  level:"مقدماتی",time:"۸ دقیقه",
+  body:`
+   <h2>Google TV؛ راهنمای هوشمند دنیای محتوا</h2>
+   <p>تصور کن وارد یک فروشگاه بزرگ فیلم شده‌ای. در حالت اول باید تک‌تک قفسه‌ها را بگردی؛ در حالت دوم یک راهنما بر اساس علایقت فیلم‌ها و سریال‌ها را از سرویس‌های قابل دسترس پیشنهاد می‌دهد.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> Google TV تجربه‌ای محتوامحور ارائه می‌کند تا کاربر راحت‌تر محتوا و اپلیکیشن‌ها را پیدا کند و پیشنهادهای شخصی‌سازی‌شده ببیند.</div>
+   <h3>تفاوت Google TV و Android TV</h3>
+   <p>Google TV تجربه کاربری و رابط محتوامحور بر بستر Android TV OS است. نباید آن را صرفاً یک فروشگاه برنامه یا یک اپلیکیشن معرفی کرد.</p>
+   <div class="lesson-warning"><b>نکته بازار ایران:</b> دسترسی به سرویس‌ها و امکانات آنلاین ممکن است تحت تأثیر محدودیت منطقه‌ای، اینترنت یا فیلترینگ باشد.</div>
+  `
+ },
+ {
+  id:"dpad",cat:"platform",icon:"🎮",title:"D-pad و ناوبری تلویزیون",
+  desc:"منطق کنترل تلویزیون با ریموت",
+  level:"مقدماتی",time:"۵ دقیقه",
+  body:`
+   <h2>D-pad؛ کلید جهت‌دار چهارجهته</h2>
+   <p>فرض کن می‌خواهی با ریموت بین چند ردیف فیلم و اپلیکیشن حرکت کنی. باید بتوانی دقیقاً به بالا، پایین، چپ و راست بروی و گزینه موردنظر را انتخاب کنی.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> D-pad مثل کلید جهت‌دار دسته بازی است؛ با جهت‌ها حرکت می‌کنی و با Select انتخابت را قطعی می‌کنی.</div>
+   <p>ناوبری درست، تجربه استفاده از تلویزیون را ساده و قابل پیش‌بینی می‌کند.</p>
+  `
+ },
+ {
+  id:"earc",cat:"audio",icon:"🔌",title:"HDMI ARC و eARC",
+  desc:"انتقال صدای تلویزیون به ساندبار",
+  level:"متوسط",time:"۶ دقیقه",
+  body:`
+   <h2>eARC؛ مسیر برگشت صدای باکیفیت</h2>
+   <p>تلویزیون فیلم را پخش می‌کند و می‌خواهی صدای آن را به ساندبار منتقل کنی. اتصال مناسب کمک می‌کند فرمت‌های صوتی پشتیبانی‌شده با ظرفیت بیشتری منتقل شوند.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> تلویزیون منبع تصویر و صداست؛ ساندبار صدای فیلم را پخش می‌کند. eARC مسیر برگشت صوتی پیشرفته‌تری نسبت به ARC فراهم می‌کند.</div>
+   <div class="lesson-warning"><b>نکته:</b> تلویزیون، کابل و دستگاه صوتی باید سازگار باشند. وجود درگاه HDMI به‌تنهایی به معنی پشتیبانی از eARC نیست.</div>
+  `
+ },
+ {
+  id:"refresh",cat:"video",icon:"🏎️",title:"Refresh Rate و Frame Rate",
+  desc:"۶۰ هرتز، ۱۲۰ هرتز و روان بودن حرکت",
+  level:"مقدماتی",time:"۸ دقیقه",
+  body:`
+   <h2>Refresh Rate؛ حرکت روان‌تر</h2>
+   <p>یک ماشین مسابقه‌ای را تصور کن که با سرعت از جلوی دوربین رد می‌شود. نمایشگر ۶۰ هرتز در هر ثانیه ۶۰ بار و نمایشگر ۱۲۰ هرتز ۱۲۰ بار تصویر را به‌روزرسانی می‌کند.</p>
+   <div class="lesson-callout"><b>مثال قابل لمس:</b> تفاوت را در فوتبال، مسابقه اتومبیل‌رانی و بازی‌های سریع بهتر می‌توان دید؛ به‌خصوص وقتی محتوای ورودی هم فریم‌ریت بالایی داشته باشد.</div>
+   <h3>تفاوت Refresh Rate و Frame Rate</h3>
+   <p>Refresh Rate ویژگی نمایشگر است؛ Frame Rate تعداد فریم‌هایی است که منبع محتوا در هر ثانیه تولید یا ارسال می‌کند.</p>
+   <div class="lesson-warning"><b>نکته:</b> عدد ۱۲۰ هرتز به‌تنهایی کیفیت حرکت را تضمین نمی‌کند. منبع تصویر، زمان پاسخ‌گویی پنل و پردازش حرکت نیز مهم‌اند.</div>
+  `
+ },
+ {
+  id:"marketing",cat:"brand",icon:"🎯",title:"مبانی مدیریت برند",
+  desc:"جایگاه‌یابی، تمایز و ارزش برند",
+  level:"مقدماتی",time:"۱۰ دقیقه",
+  body:`
+   <h2>مدیریت برند از کجا شروع می‌شود؟</h2>
+   <p>برند فقط لوگو، رنگ سازمانی یا شعار تبلیغاتی نیست. برند مجموعه‌ای از برداشت‌ها، تجربه‌ها و انتظاراتی است که در ذهن مخاطب شکل می‌گیرد.</p>
+   <h3>مثال قابل لمس</h3>
+   <p>اگر دو تلویزیون مشخصات فنی مشابهی داشته باشند، اما مشتری یکی را به‌دلیل خدمات بهتر، اعتماد بیشتر یا تجربه قبلی انتخاب کند، این تفاوت بخشی از ارزش برند است.</p>
+   <div class="lesson-callout"><b>سؤال کلیدی:</b> اگر لوگوی برند را از روی محصول برداریم، چه چیزی باعث می‌شود مشتری همچنان آن محصول را به رقیب ترجیح دهد؟</div>
+  `
+ },
+ {
+  id:"productmanagement",cat:"product",icon:"🧭",title:"مدیریت محصول چیست؟",
+  desc:"از شناخت نیاز بازار تا عرضه و رشد محصول",
+  level:"مقدماتی",time:"۱۲ دقیقه",
+  body:`
+   <h2>مدیریت محصول؛ اتصال بازار، کسب‌وکار و فناوری</h2>
+   <p>مدیر محصول فقط مسئول مشخصات فنی یا پیگیری تولید نیست. او باید نیاز مشتری، فرصت بازار، توان فنی، اقتصاد محصول و استراتژی شرکت را به یک تصمیم منسجم تبدیل کند.</p>
+   <h3>مثال قابل لمس</h3>
+   <p>فرض کن بازار به مانیتور گیمینگ اقتصادی نیاز دارد. مدیر محصول باید مشخص کند چه سایزی، چه نرخ نوسازی، چه پنلی، در چه بازه قیمتی و با چه حجم فروشی منطقی است.</p>
+   <div class="lesson-callout"><b>اصل مهم:</b> محصول خوب الزاماً محصولی با بیشترین امکانات نیست؛ محصولی است که مسئله واقعی مشتری را با اقتصاد قابل‌قبول حل کند.</div>
+  `
+ },
+ {
+  id:"research",cat:"research",icon:"📊",title:"تحقیقات بازار و تحلیل رقبا",
+  desc:"تبدیل داده بازار به تصمیم محصولی",
+  level:"مقدماتی",time:"۱۰ دقیقه",
+  body:`
+   <h2>تحقیقات بازار؛ فراتر از جمع‌آوری قیمت</h2>
+   <p>تحلیل بازار یعنی فهمیدن اندازه فرصت، رفتار مشتری، ساختار رقابت و عواملی که تصمیم خرید را شکل می‌دهند.</p>
+   <h3>مثال قابل لمس</h3>
+   <p>اگر رقیب ۲۰ مدل تلویزیون دارد، این عدد به‌تنهایی چیزی درباره قدرت رقابتی او نمی‌گوید. باید بدانیم هر مدل در چه سایز، فناوری، قیمت و جایگاهی قرار گرفته و کدام بخش بازار را پوشش می‌دهد.</p>
+   <div class="lesson-callout"><b>سؤال کلیدی:</b> داده‌ای که جمع کرده‌ای، کدام تصمیم محصولی یا بازاریابی را تغییر می‌دهد؟ اگر پاسخ مشخص نیست، احتمالاً هنوز تحلیل انجام نشده است.</div>
+  `
+ },
+ {
+  id:"campaign",cat:"campaign",icon:"📣",title:"طراحی کمپین ۳۶۰ درجه",
+  desc:"هماهنگی رسانه، محتوا، فروش و تجربه",
+  level:"متوسط",time:"۱۲ دقیقه",
+  body:`
+   <h2>کمپین ۳۶۰ درجه یعنی چه؟</h2>
+   <p>کمپین ۳۶۰ درجه یعنی طراحی نقاط تماس هماهنگ با مخاطب؛ از آگاهی و علاقه تا بررسی، خرید و تجربه پس از خرید.</p>
+   <h3>مثال قابل لمس</h3>
+   <p>برای معرفی یک تلویزیون گیمینگ، فقط یک تیزر تبلیغاتی کافی نیست. بررسی تخصصی رسانه، رویداد بازی، تجربه محصول در فروشگاه، محتوای شبکه اجتماعی و آموزش فروشنده باید یک پیام منسجم را منتقل کنند.</p>
+   <div class="lesson-callout"><b>اصل مهم:</b> تعداد فعالیت‌ها معیار جامع بودن کمپین نیست؛ هر فعالیت باید نقش مشخصی در مسیر مخاطب و هدف کسب‌وکار داشته باشد.</div>
+  `
+ },
+ {
+  id:"sales",cat:"sales",icon:"🗣️",title:"اصول سیلزتاک فروشگاهی",
+  desc:"تبدیل ویژگی فنی به منفعت قابل درک",
+  level:"مقدماتی",time:"۸ دقیقه",
+  body:`
+   <h2>سیلزتاک؛ مشخصات را به تجربه ترجمه کن</h2>
+   <p>مشتری معمولاً برای خرید یک اصطلاح فنی پول نمی‌دهد؛ برای نتیجه‌ای که از آن می‌گیرد هزینه می‌کند.</p>
+   <div class="lesson-callout"><b>مثال:</b> به‌جای گفتن «این تلویزیون ۱۲۰ هرتز است»، بگو «اگر فوتبال یا بازی سریع تماشا می‌کنید، نرخ نوسازی بالاتر می‌تواند حرکت را روان‌تر نشان دهد؛ البته به محتوای ورودی هم بستگی دارد.»</div>
+   <h3>فرمول پیشنهادی</h3>
+   <ol><li>نیاز مشتری را کشف کن.</li><li>ویژگی مرتبط را معرفی کن.</li><li>اثر آن را با مثال توضیح بده.</li><li>محدودیت یا پیش‌نیاز را صادقانه بگو.</li></ol>
+  `
+ },
+ {
+  id:"comparison",cat:"comparison",icon:"⚖️",title:"مقایسه اصولی محصولات رقبا",
+  desc:"مقایسه هم‌سطح، قابل اتکا و تصمیم‌ساز",
+  level:"متوسط",time:"۱۰ دقیقه",
+  body:`
+   <h2>مقایسه محصول؛ فقط کنار هم گذاشتن مشخصات نیست</h2>
+   <p>مقایسه معتبر باید مدل دقیق، بازار عرضه، زمان بررسی و منبع اطلاعات را مشخص کند.</p>
+   <h3>مثال قابل لمس</h3>
+   <p>مقایسه یک تلویزیون ۵۵ اینچ اقتصادی با یک مدل ۶۵ اینچ Mini LED بدون تعدیل قیمت، سایز و جایگاه محصول، مقایسه منصفانه‌ای نیست.</p>
+   <div class="lesson-callout"><b>اصل مهم:</b> هر مقایسه باید به یک نتیجه تصمیم‌ساز برسد: در چه چیزی برتری داریم، در چه چیزی ضعف داریم و برای جبران آن چه باید کرد؟</div>
+  `
+ }
+];
+
+const categoryNames = {
+ video:"فناوری‌های تصویر",audio:"فناوری‌های صوتی",
+ tv:"تلویزیون و نمایشگر",platform:"سیستم‌عامل و پلتفرم",
+ brand:"مدیریت برند",product:"مدیریت محصول",
+ research:"تحقیقات بازار",campaign:"کمپین و تبلیغات",
+ sales:"آموزش فروش و سیلزتاک",comparison:"تحلیل و مقایسه رقبا"
+};
+
+const quiz = [
+ {q:"HDR در درجه اول به چه چیزی مربوط است؟",
+  a:["تعداد بلندگوها","دامنه روشنایی و جزئیات تصویر","سرعت اینترنت"],
+  correct:1,explain:"HDR به نمایش گسترده‌تر اختلاف روشنایی و جزئیات مربوط است."},
+ {q:"Dolby Atmos چه چیزی را به تجربه صوتی اضافه می‌کند؟",
+  a:["فقط صدای بلندتر","اطلاعات مکانی و حرکت صدا","روشنایی بیشتر"],
+  correct:1,explain:"Atmos امکان بازتولید صدا با اطلاعات مکانی را فراهم می‌کند."},
+ {q:"آیا Dolby Digital Plus همان Dolby Atmos است؟",
+  a:["بله","خیر","فقط در تلویزیون‌های 4K"],
+  correct:1,explain:"این دو فناوری متفاوت‌اند؛ Atmos می‌تواند روی Dolby Digital Plus ارائه شود."},
+ {q:"Refresh Rate ویژگی کدام بخش است؟",
+  a:["نمایشگر","سرویس اینترنت","ریموت کنترل"],
+  correct:0,explain:"Refresh Rate تعداد دفعات به‌روزرسانی تصویر نمایشگر در ثانیه است."},
+ {q:"Google TV را بهتر است چگونه توصیف کنیم؟",
+  a:["فقط یک کابل ارتباطی","تجربه کاربری محتوامحور بر بستر Android TV OS","یک فناوری صوتی"],
+  correct:1,explain:"Google TV تجربه کاربری و رابط محتوامحور مبتنی بر Android TV OS است."}
+];
+
+function login(event){
+ event.preventDefault();
+ const u=document.getElementById("username").value.trim();
+ const p=document.getElementById("password").value;
+ if(u===DEMO_USER && p===DEMO_PASS){
+  sessionStorage.setItem("academyDemo","1");
+  openApp();
+ }else{
+  document.getElementById("loginError").textContent="نام کاربری یا رمز عبور اشتباه است.";
+ }
+}
+document.getElementById("loginForm").addEventListener("submit",login);
+
+function openApp(){
+ document.getElementById("login").classList.add("hidden");
+ document.getElementById("app").classList.remove("hidden");
+ showHome();
+}
+function logout(){
+ sessionStorage.removeItem("academyDemo");
+ location.reload();
+}
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("open")}
+function setActive(button){
+ document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+ if(button)button.classList.add("active");
+}
+function closeMobileMenu(){document.getElementById("sidebar").classList.remove("open")}
+
+function showHome(){
+ setActive(document.querySelector(".nav-item"));
+ closeMobileMenu();
+ document.getElementById("mainContent").innerHTML=`
+  <div class="breadcrumb">آکادمی / داشبورد</div>
+  <section class="hero">
+   <span class="hero-tag">KNOWLEDGE · PRODUCT · MARKETING</span>
+   <h2>دانش تخصصی، تصمیم بهتر، تجربه برتر</h2>
+   <p>مرجع یادگیری فناوری‌های صوتی و تصویری، مدیریت محصول، بازاریابی و تجربه مشتری. از مفاهیم پایه تا تحلیل‌های تخصصی.</p>
+  </section>
+  <div class="stats">
+   <div class="stat"><strong>${lessons.length}</strong><span>درس آماده یادگیری</span></div>
+   <div class="stat"><strong>۳</strong><span>حوزه اصلی آکادمی</span></div>
+   <div class="stat"><strong>۲۴/۷</strong><span>دسترسی به محتوای آموزشی</span></div>
+  </div>
+  <div class="section-title">مسیرهای یادگیری</div>
+  <div class="grid">
+   ${categoryCard("▣","فناوری تصویر","استانداردها و فناوری‌های نمایش تصویر","video")}
+   ${categoryCard("♫","فناوری صوت","فرمت‌ها، پردازش و تجربه صوتی","audio")}
+   ${categoryCard("◈","سیستم‌عامل و پلتفرم","Google TV، Android TV و رابط کاربری","platform")}
+   ${categoryCard("◎","مدیریت برند","جایگاه‌یابی، هویت و ارزش برند","brand")}
+   ${categoryCard("◉","مدیریت محصول","از نیاز بازار تا توسعه و عرضه","product")}
+   ${categoryCard("♧","فروش و تجربه مشتری","سیلزتاک و تبدیل ویژگی به منفعت","sales")}
+  </div>
+  <div class="section-title">تازه‌های آکادمی</div>
+  <div class="grid">${lessons.slice(0,6).map(lessonCard).join("")}</div>
+  <div class="footer-note">AV & Marketing Academy · نسخه اولیه آموزشی</div>`;
+}
+function categoryCard(icon,title,desc,cat){
+ return `<article class="card" onclick="showCategory('${cat}')">
+  <div class="card-icon">${icon}</div><h3>${title}</h3><p>${desc}</p>
+  <div class="card-foot"><span>مشاهده آموزش‌ها</span><span>←</span></div>
+ </article>`;
+}
+function lessonCard(l){
+ return `<article class="card" onclick="openLesson('${l.id}')">
+  <div class="card-icon">${l.icon}</div><h3>${l.title}</h3><p>${l.desc}</p>
+  <div class="card-foot"><span class="pill">${l.level}</span><span>${l.time}</span></div>
+ </article>`;
+}
+function showCategory(cat){
+ closeMobileMenu();
+ const items=lessons.filter(l=>l.cat===cat);
+ const title=categoryNames[cat]||"آموزش";
+ document.getElementById("mainContent").innerHTML=`
+  <div class="breadcrumb">آکادمی / ${title}</div>
+  <h1 class="page-title">${title}</h1>
+  <p class="page-subtitle">محتوای آموزشی این حوزه را انتخاب کنید.</p>
+  <div class="search-wrap"><input class="search" id="localSearch" placeholder="جست‌وجو در این بخش..." oninput="filterCards()"></div>
+  <div class="grid" id="lessonGrid">${items.map(lessonCard).join("")||'<div class="empty">محتوای این بخش در حال آماده‌سازی است.</div>'}</div>`;
+}
+function filterCards(){
+ const q=document.getElementById("localSearch").value.toLowerCase();
+ const filtered=lessons.filter(l=>l.title.toLowerCase().includes(q)||l.desc.toLowerCase().includes(q));
+ document.getElementById("lessonGrid").innerHTML=filtered.map(lessonCard).join("")||'<div class="empty">موردی پیدا نشد.</div>';
+}
+function openLesson(id){
+ closeMobileMenu();
+ const l=lessons.find(x=>x.id===id);
+ if(!l)return;
+ const index=lessons.indexOf(l);
+ document.getElementById("mainContent").innerHTML=`
+  <div class="breadcrumb">آکادمی / ${categoryNames[l.cat]} / ${l.title}</div>
+  <h1 class="page-title">${l.title}</h1>
+  <p class="page-subtitle">${l.desc} · ${l.level} · ${l.time}</p>
+  <article class="lesson">${l.body}
+   <div class="lesson-nav">
+    <button onclick="openLesson('${lessons[(index+1)%lessons.length].id}')">درس بعدی ←</button>
+    <button class="secondary" onclick="showCategory('${l.cat}')">بازگشت به دسته‌بندی</button>
+   </div>
+  </article>`;
+}
+function showQuiz(){
+ closeMobileMenu();
+ document.getElementById("mainContent").innerHTML=`
+  <div class="breadcrumb">آکادمی / آزمون</div>
+  <h1 class="page-title">آزمون دانش محصول</h1>
+  <p class="page-subtitle">دانسته‌های خود را در مفاهیم پایه صوت و تصویر بسنجید.</p>
+  <div class="lesson" id="quizBox"></div>`;
+ let current=0,score=0;
+ function render(){
+  const q=quiz[current];
+  document.getElementById("quizBox").innerHTML=`
+   <span class="pill">سؤال ${current+1} از ${quiz.length}</span>
+   <h3>${q.q}</h3>
+   ${q.a.map((a,i)=>`<button class="quiz-option" onclick="answerQuiz(${i})">${a}</button>`).join("")}
+   <p id="quizFeedback"></p>`;
+  window.answerQuiz=(i)=>{
+   const buttons=document.querySelectorAll(".quiz-option");
+   buttons.forEach(b=>b.disabled=true);
+   const ok=i===q.correct;
+   if(ok)score++;
+   document.getElementById("quizFeedback").innerHTML=
+    `<div class="${ok?'lesson-callout':'lesson-warning'}">${ok?'پاسخ درست است.':'این پاسخ درست نیست.'} ${q.explain}</div>
+     <button class="primary" onclick="nextQuiz()">ادامه</button>`;
+  };
+  window.nextQuiz=()=>{
+   current++;
+   if(current<quiz.length)render();
+   else document.getElementById("quizBox").innerHTML=
+    `<h2>آزمون به پایان رسید</h2><h1>${score} از ${quiz.length}</h1>
+     <p>امتیاز شما</p><button class="primary" onclick="showQuiz()">تکرار آزمون</button>`;
+  };
+ }
+ render();
+}
+function showSources(){
+ closeMobileMenu();
+ document.getElementById("mainContent").innerHTML=`
+  <div class="breadcrumb">آکادمی / منابع</div>
+  <h1 class="page-title">منابع و مستندات</h1>
+  <p class="page-subtitle">مراجع رسمی برای مطالعه و راستی‌آزمایی ادعاهای فنی</p>
+  <div class="lesson">
+   <h3>Google و Android</h3>
+   <p><a href="https://source.android.com/docs/compatibility/15/android-15-cdd" target="_blank">Android Compatibility Definition Document</a></p>
+   <p><a href="https://source.android.com/docs/core/display/hdr" target="_blank">Android HDR Playback</a></p>
+   <p><a href="https://store.google.com/product/google_tv_streamer_specs" target="_blank">Google TV Streamer Specifications</a></p>
+   <h3>Dolby</h3>
+   <p><a href="https://professional.dolby.com/licensing/" target="_blank">Dolby Licensing</a></p>
+   <p><a href="https://handbook.dolby.com/dsh/" target="_blank">Dolby Licensing Handbook</a></p>
+   <h3>اصل راستی‌آزمایی</h3>
+   <p>پشتیبانی از یک استاندارد با کیفیت اجرای آن استاندارد در محصول یکسان نیست. برای ادعای هر مدل، دیتاشیت و مستندات همان مدل ملاک است.</p>
+  </div>`;
+}
+
+if(sessionStorage.getItem("academyDemo")==="1")openApp();
+</script>
+</body>
+</html>
