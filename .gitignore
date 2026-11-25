@@ -1,0 +1,4 @@
+# Local Supabase browser configuration
+supabase-config.js
+.env
+.env.*
