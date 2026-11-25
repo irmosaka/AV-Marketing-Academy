@@ -217,3 +217,9 @@ as $$
 $$;
 
 grant execute on function public.verify_certificate(text) to anon, authenticated;
+
+
+-- Column-level protection: learners may edit their display name only.
+-- This prevents a user from promoting their own profile to instructor/admin.
+revoke update on public.profiles from authenticated;
+grant update(display_name, updated_at) on public.profiles to authenticated;
