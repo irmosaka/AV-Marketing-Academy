@@ -194,8 +194,8 @@ create policy articles_read_visible on public.articles for select to authenticat
 create policy articles_staff_insert on public.articles for insert to authenticated
  with check (public.is_academy_staff() and author_id=auth.uid());
 create policy articles_staff_update on public.articles for update to authenticated
- using (public.is_academy_staff())
- with check (public.is_academy_staff() and (status <> 'published' or public.current_academy_role()='admin'));
+ using (public.current_academy_role()='admin' or (public.is_academy_staff() and author_id=auth.uid()))
+ with check (public.current_academy_role()='admin' or (public.is_academy_staff() and author_id=auth.uid() and status <> 'published'));
 create policy article_versions_staff on public.article_versions for all to authenticated
  using (public.is_academy_staff()) with check (public.is_academy_staff());
 
@@ -249,13 +249,15 @@ on conflict (id) do nothing;
 
 create policy portal_documents_staff_upload on storage.objects for insert to authenticated
  with check (bucket_id='portal-documents' and public.is_academy_staff() and (storage.foldername(name))[1]=auth.uid()::text);
-create policy portal_documents_staff_read on storage.objects for select to authenticated
- using (bucket_id='portal-documents' and public.is_academy_staff());
-create policy portal_documents_published_internal_read on storage.objects for select to authenticated
+create policy portal_documents_read_authorized on storage.objects for select to authenticated
  using (
-  bucket_id='portal-documents' and exists (
-   select 1 from public.documents d
-   where d.file_path=name and d.status='published' and d.confidentiality='internal'
+  bucket_id='portal-documents' and (
+   public.current_academy_role()='admin' or exists (
+    select 1 from public.documents d
+    where d.file_path=name and (
+      (d.status='published' and d.confidentiality='internal') or d.owner_id=auth.uid()
+    )
+   )
   )
  );
 create policy portal_documents_admin_delete on storage.objects for delete to authenticated
