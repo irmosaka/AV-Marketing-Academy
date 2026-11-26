@@ -236,8 +236,7 @@ create policy ai_chunks_staff_manage on public.ai_chunks for all to authenticate
  using (public.is_academy_staff()) with check (public.is_academy_staff());
 create policy ai_runs_read_own_or_admin on public.ai_runs for select to authenticated
  using (user_id=auth.uid() or public.current_academy_role()='admin');
-create policy ai_runs_insert_own on public.ai_runs for insert to authenticated
- with check (user_id=auth.uid());
+-- AI execution records are created by trusted server-side functions only.
 create policy ai_feedback_own on public.ai_feedback for all to authenticated
  using (user_id=auth.uid()) with check (user_id=auth.uid());
 
