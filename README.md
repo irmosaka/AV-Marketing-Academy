@@ -1,46 +1,45 @@
-# AV & Marketing Academy
+# AV Knowledge & Intelligence
 
-پرتال آموزش تخصصی صوت، تصویر، فناوری‌های هوشمند، مدیریت محصول و بازاریابی.
+پرتال داخلی دانش و هوشمندی کسب‌وکار صوتی، تصویری و مارکتینگ.
 
-## وضعیت پیاده‌سازی
-- رابط اولیه آکادمی در `index.html` قرار دارد.
-- ورود نسخه فعلی نمایشی است: `931043 / 931043`.
-- پیشرفت نسخه فعلی در مرورگر ذخیره می‌شود؛ این روش برای احراز هویت یا گواهینامه معتبر مناسب نیست.
-- `supabase-schema.sql`: ساختار اولیه دیتابیس، نقش‌ها و RLS.
-- `supabase-config.example.js`: الگوی تنظیمات عمومی اتصال Supabase.
-- `.gitignore`: جلوگیری از ثبت تنظیمات محلی و فایل‌های محیطی.
+## Product direction
+- Internal-only workspace with Supabase authentication.
+- Controlled knowledge publishing: draft/review/published/archived.
+- Independent BI module backed by structured, versioned datasets.
+- Private document repository hosted in Supabase Storage.
+- AI-ready data model; AI inference and agents are future phases.
+- Mobile-first Persian RTL interface.
 
-## راه‌اندازی زیرساخت
-1. در Supabase یک پروژه ایجاد کنید.
-2. محتوای `supabase-schema.sql` را در SQL Editor اجرا کنید.
-3. از Project Settings > API، Project URL و کلید عمومی anon/publishable را بردارید.
-4. فایل نمونه را در محیط محلی به `supabase-config.js` تبدیل و مقادیر را تکمیل کنید.
-5. `supabase-config.js` را Commit نکنید؛ فایل در `.gitignore` قرار گرفته است.
-6. روش ورود مناسب سازمان را در Supabase Auth فعال کنید.
-7. نقش‌های instructor و admin فقط توسط مدیر مورد اعتماد پروژه در دیتابیس تعیین شوند.
+## Repository structure
+- `index.html`: application shell and authentication/recovery screens.
+- `app.css`: responsive design system and mobile-first layouts.
+- `app.js`: Supabase client, auth flow, module navigation and data views.
+- `supabase-config.js`: public Supabase URL + publishable key (client-safe; protected by RLS).
+- `supabase-config.example.js`: configuration template.
+- `supabase-intelligence-migration.sql`: additive database migration for the new product.
+- `supabase-schema.sql`: legacy academy schema; retained for safe migration history.
 
-## ارزیابی سمت سرور
-- کد اولیه Edge Function در `supabase/functions/submit-assessment/index.ts` قرار دارد.
-- تابع، هویت کاربر را از توکن Supabase بررسی می‌کند، تکمیل درس‌های اجباری را کنترل می‌کند، پاسخ‌ها را با answer_key سمت سرور می‌سنجد و در صورت قبولی گواهینامه ثبت می‌کند.
-- برای هر سؤال، `options` باید آرایه‌ای از اشیای دارای `key` و `label` باشد؛ `answer_key` همان key صحیح است.
-- تابع را با Supabase CLI منتشر و secretهای لازم را فقط در محیط Supabase تنظیم کنید. قبل از استفاده واقعی، تست بار، محدودیت تلاش هم‌زمان، CORS و سناریوهای خطا لازم است.
+## Setup / deployment
+1. In Supabase SQL Editor, review and run `supabase-intelligence-migration.sql` once.
+2. Confirm the existing `profiles` table and `academy_role` values are present. Admin and instructor profiles must be assigned by a trusted administrator.
+3. In Supabase Authentication URL Configuration, set Site URL to the GitHub Pages URL and add that exact URL to Redirect URLs. For GitHub Pages project sites, add `https://OWNER.github.io/REPOSITORY/`.
+4. GitHub Pages should deploy from `main` / root.
+5. Supabase publishable key is intended for browser use. Never put service_role or secret keys in this repository.
+6. Run a controlled test with a learner, instructor and admin account before organizational rollout.
 
-## امنیت و محدودیت فعلی
-- کلید `service_role` یا هر secret نباید در مرورگر، HTML یا GitHub قرار بگیرد.
-- RLS باید فعال بماند.
-- ثبت نمره، قبولی، باز شدن مرحله و صدور/لغو گواهینامه باید از طریق RPC امن یا Edge Function سمت سرور انجام شود؛ مرورگر نباید بتواند نمره یا گواهینامه را خودش تعیین کند.
-- جدول سوال‌ها عمداً برای کاربران عادی قابل خواندن نیست تا answer_key افشا نشود.
-- schema فعلی زیرساخت اولیه است؛ تا زمان پیاده‌سازی توابع امن ارزیابی، صدور گواهینامه و اتصال رابط کاربری، سامانه عملیاتی و آماده استفاده سازمانی محسوب نمی‌شود.
-- قبل از بهره‌برداری، policyها و توابع باید توسط مسئول فنی بازبینی و تست امنیتی شوند.
+## Important current limitations
+- Existing accounts and profile roles are retained.
+- The UI hides retired quiz/certificate flows, but legacy tables and the old assessment Edge Function are intentionally not dropped or deleted.
+- Article creation currently saves drafts. Review/approval publishing UI and full audit event coverage are next implementation steps.
+- BI dashboard builder, Excel ingestion/validation pipeline and dataset versioning UI are planned next.
+- File upload and signed download use the private `portal-documents` bucket and require the SQL migration.
+- AI tables store source/version/chunk/run/feedback metadata. Embedding dimensions and provider-specific vector storage are deferred until model selection; this avoids locking the platform to one AI vendor.
+- This static GitHub Pages frontend uses Supabase Auth + RLS. Any privileged processing, Excel parsing at scale, AI calls, and cross-user administration must run server-side (Edge Functions), never with a service-role key in the browser.
 
-## نقشه محتوای آکادمی
-- **TV & Display:** پنل، نور پس‌زمینه، رزولوشن، نرخ نوسازی، HDR، پردازش تصویر، HDMI و ارزیابی کیفیت.
-- **Audio:** آکوستیک، درایورها، توان، امپدانس، حساسیت، ساندبار، کانال‌ها، Dolby و DTS، ARC/eARC.
-- **Smart TV & Ecosystem:** Android TV OS، Google TV، AOSP، ریموت و D-pad، اپلیکیشن‌ها، DRM، OTA و امنیت.
-- **Product Management:** VoC، بخش‌بندی، سبد محصول، PRD، NPD، قیمت‌گذاری، PLC و GTM.
-- **Marketing & Branding:** STP، رفتار مصرف‌کننده، جایگاه‌یابی، آمیخته بازاریابی، تحقیقات بازار و کمپین ۳۶۰.
-- **Sales & Trade Marketing:** سیلزتاک، ترجمه ویژگی به منفعت، مدیریت اعتراض و تجربه فروشگاهی.
-- **Market Intelligence:** Sell-in/Sell-out، سهم بازار، شاخص قیمت، پیش‌بینی و داشبورد.
-
-## انتشار
-برای GitHub Pages، از Settings > Pages شاخه اصلی و پوشه root را انتخاب کنید. تا زمانی که Auth و منطق سمت سرور متصل و آزموده نشده‌اند، سایت را صرفاً نمونه نمایشی تلقی کنید.
+## Security checklist
+- Enable MFA where supported by organizational policy.
+- Verify RLS on every exposed table and Storage bucket.
+- Do not use public buckets for internal documents.
+- Do not trust UI role checks; database policies are authoritative.
+- Restrict file types and size; scan uploaded files before production use.
+- Define retention and backup policies for datasets and documents.
