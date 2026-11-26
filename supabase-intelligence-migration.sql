@@ -194,12 +194,15 @@ create policy articles_read_visible on public.articles for select to authenticat
 create policy articles_staff_insert on public.articles for insert to authenticated
  with check (public.is_academy_staff() and author_id=auth.uid());
 create policy articles_staff_update on public.articles for update to authenticated
- using (public.is_academy_staff()) with check (public.is_academy_staff());
+ using (public.is_academy_staff())
+ with check (public.is_academy_staff() and (status <> 'published' or public.current_academy_role()='admin'));
 create policy article_versions_staff on public.article_versions for all to authenticated
  using (public.is_academy_staff()) with check (public.is_academy_staff());
 
 create policy documents_read_visible on public.documents for select to authenticated
- using (status='published' and (confidentiality='internal' or public.current_academy_role()='admin') or public.is_academy_staff());
+ using ((status='published' and confidentiality='internal')
+   or public.current_academy_role()='admin'
+   or (public.is_academy_staff() and owner_id=auth.uid()));
 create policy documents_staff_insert on public.documents for insert to authenticated
  with check (public.is_academy_staff() and owner_id=auth.uid());
 create policy documents_staff_update on public.documents for update to authenticated
@@ -221,8 +224,7 @@ create policy dashboards_admin_all on public.dashboards for all to authenticated
 
 create policy audit_logs_admin_read on public.audit_logs for select to authenticated
  using (public.current_academy_role()='admin');
-create policy audit_logs_insert_authenticated on public.audit_logs for insert to authenticated
- with check (actor_id=auth.uid());
+-- Audit records are written only by trusted server-side functions (service role).
 
 create policy ai_documents_read_staff on public.ai_documents for select to authenticated
  using (public.is_academy_staff());
@@ -249,5 +251,12 @@ create policy portal_documents_staff_upload on storage.objects for insert to aut
  with check (bucket_id='portal-documents' and public.is_academy_staff() and (storage.foldername(name))[1]=auth.uid()::text);
 create policy portal_documents_staff_read on storage.objects for select to authenticated
  using (bucket_id='portal-documents' and public.is_academy_staff());
+create policy portal_documents_published_internal_read on storage.objects for select to authenticated
+ using (
+  bucket_id='portal-documents' and exists (
+   select 1 from public.documents d
+   where d.file_path=name and d.status='published' and d.confidentiality='internal'
+  )
+ );
 create policy portal_documents_admin_delete on storage.objects for delete to authenticated
  using (bucket_id='portal-documents' and public.current_academy_role()='admin');
