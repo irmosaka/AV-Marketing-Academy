@@ -188,76 +188,241 @@ alter table public.ai_chunks enable row level security;
 alter table public.ai_runs enable row level security;
 alter table public.ai_feedback enable row level security;
 
--- Public-facing product is authenticated-only: no anon policies are created.
-create policy articles_read_visible on public.articles for select to authenticated
- using (status='published' or public.is_academy_staff());
-create policy articles_staff_insert on public.articles for insert to authenticated
- with check (public.is_academy_staff() and author_id=auth.uid());
-create policy articles_staff_update on public.articles for update to authenticated
- using (public.current_academy_role()='admin' or (public.is_academy_staff() and author_id=auth.uid()))
- with check (public.current_academy_role()='admin' or (public.is_academy_staff() and author_id=auth.uid() and status <> 'published'));
-create policy article_versions_staff on public.article_versions for all to authenticated
- using (public.is_academy_staff()) with check (public.is_academy_staff());
+-- Authenticated-only policies. No anonymous access is granted.
+-- Roles currently present in academy_role: learner, instructor, admin.
+-- Instructor is the content-authoring role; admin retains approval/publication authority.
 
-create policy documents_read_visible on public.documents for select to authenticated
- using ((status='published' and confidentiality='internal')
-   or public.current_academy_role()='admin'
-   or (public.is_academy_staff() and owner_id=auth.uid()));
-create policy documents_staff_insert on public.documents for insert to authenticated
- with check (public.is_academy_staff() and owner_id=auth.uid());
-create policy documents_staff_update on public.documents for update to authenticated
- using (public.is_academy_staff()) with check (public.is_academy_staff());
+-- Make this policy section safely re-runnable.
+drop policy if exists articles_read_visible on public.articles;
+drop policy if exists articles_staff_insert on public.articles;
+drop policy if exists articles_staff_update on public.articles;
+drop policy if exists article_versions_staff on public.article_versions;
+drop policy if exists documents_read_visible on public.documents;
+drop policy if exists documents_staff_insert on public.documents;
+drop policy if exists documents_staff_update on public.documents;
+drop policy if exists data_sources_admin_all on public.data_sources;
+drop policy if exists datasets_read_active on public.datasets;
+drop policy if exists datasets_admin_all on public.datasets;
+drop policy if exists dataset_versions_admin_all on public.dataset_versions;
+drop policy if exists dashboards_read_visible on public.dashboards;
+drop policy if exists dashboards_admin_all on public.dashboards;
+drop policy if exists audit_logs_admin_read on public.audit_logs;
+drop policy if exists ai_documents_read_staff on public.ai_documents;
+drop policy if exists ai_documents_staff_manage on public.ai_documents;
+drop policy if exists ai_chunks_read_staff on public.ai_chunks;
+drop policy if exists ai_chunks_staff_manage on public.ai_chunks;
+drop policy if exists ai_runs_read_own_or_admin on public.ai_runs;
+drop policy if exists ai_feedback_own on public.ai_feedback;
 
-create policy data_sources_admin_all on public.data_sources for all to authenticated
- using (public.current_academy_role()='admin') with check (public.current_academy_role()='admin');
-create policy datasets_read_active on public.datasets for select to authenticated
- using (status='active' and (confidentiality='internal' or public.current_academy_role()='admin') or public.current_academy_role()='admin');
-create policy datasets_admin_all on public.datasets for all to authenticated
- using (public.current_academy_role()='admin') with check (public.current_academy_role()='admin');
-create policy dataset_versions_admin_all on public.dataset_versions for all to authenticated
- using (public.current_academy_role()='admin') with check (public.current_academy_role()='admin');
+-- Articles: learners see published content; instructors author their own drafts;
+-- only admins can publish, archive, or edit another author's article.
+create policy articles_read_visible on public.articles
+for select to authenticated
+using (
+  status = 'published'
+  or author_id = auth.uid()
+  or public.current_academy_role() = 'admin'
+);
 
-create policy dashboards_read_visible on public.dashboards for select to authenticated
- using (is_published and (confidentiality='internal' or public.current_academy_role()='admin') or public.current_academy_role()='admin');
-create policy dashboards_admin_all on public.dashboards for all to authenticated
- using (public.current_academy_role()='admin') with check (public.current_academy_role()='admin');
+create policy articles_staff_insert on public.articles
+for insert to authenticated
+with check (
+  public.is_academy_staff()
+  and author_id = auth.uid()
+  and status in ('draft','review')
+);
 
-create policy audit_logs_admin_read on public.audit_logs for select to authenticated
- using (public.current_academy_role()='admin');
--- Audit records are written only by trusted server-side functions (service role).
+create policy articles_staff_update on public.articles
+for update to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or (public.current_academy_role() = 'instructor'
+      and author_id = auth.uid()
+      and status in ('draft','review'))
+)
+with check (
+  public.current_academy_role() = 'admin'
+  or (public.current_academy_role() = 'instructor'
+      and author_id = auth.uid()
+      and status in ('draft','review'))
+);
 
-create policy ai_documents_read_staff on public.ai_documents for select to authenticated
- using (public.is_academy_staff());
-create policy ai_documents_staff_manage on public.ai_documents for all to authenticated
- using (public.is_academy_staff()) with check (public.is_academy_staff());
-create policy ai_chunks_read_staff on public.ai_chunks for select to authenticated
- using (public.is_academy_staff());
-create policy ai_chunks_staff_manage on public.ai_chunks for all to authenticated
- using (public.is_academy_staff()) with check (public.is_academy_staff());
-create policy ai_runs_read_own_or_admin on public.ai_runs for select to authenticated
- using (user_id=auth.uid() or public.current_academy_role()='admin');
--- AI execution records are created by trusted server-side functions only.
-create policy ai_feedback_own on public.ai_feedback for all to authenticated
- using (user_id=auth.uid()) with check (user_id=auth.uid());
+-- Version history follows the parent article's ownership. Only admins may delete versions.
+create policy article_versions_read on public.article_versions
+for select to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or exists (
+    select 1 from public.articles a
+    where a.id = article_versions.article_id
+      and a.author_id = auth.uid()
+  )
+);
+create policy article_versions_insert on public.article_versions
+for insert to authenticated
+with check (
+  public.is_academy_staff()
+  and changed_by = auth.uid()
+  and exists (
+    select 1 from public.articles a
+    where a.id = article_versions.article_id
+      and a.author_id = auth.uid()
+      and a.status in ('draft','review')
+  )
+);
+create policy article_versions_update on public.article_versions
+for update to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or exists (
+    select 1 from public.articles a
+    where a.id = article_versions.article_id
+      and a.author_id = auth.uid()
+      and a.status in ('draft','review')
+  )
+)
+with check (
+  public.current_academy_role() = 'admin'
+  or exists (
+    select 1 from public.articles a
+    where a.id = article_versions.article_id
+      and a.author_id = auth.uid()
+      and a.status in ('draft','review')
+  )
+);
+create policy article_versions_delete_admin on public.article_versions
+for delete to authenticated
+using (public.current_academy_role() = 'admin');
 
--- Private file bucket. File access is mediated by Storage RLS and signed URLs.
+-- Documents: instructors can manage only their own records; admins manage all.
+create policy documents_read_visible on public.documents
+for select to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or owner_id = auth.uid()
+  or (status = 'published' and confidentiality = 'internal')
+);
+create policy documents_staff_insert on public.documents
+for insert to authenticated
+with check (public.is_academy_staff() and owner_id = auth.uid());
+create policy documents_staff_update on public.documents
+for update to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or (public.current_academy_role() = 'instructor' and owner_id = auth.uid())
+)
+with check (
+  public.current_academy_role() = 'admin'
+  or (public.current_academy_role() = 'instructor' and owner_id = auth.uid())
+);
+
+-- Business data and dashboard administration remain admin-only for the first release.
+create policy data_sources_admin_all on public.data_sources
+for all to authenticated
+using (public.current_academy_role() = 'admin')
+with check (public.current_academy_role() = 'admin');
+
+create policy datasets_read_active on public.datasets
+for select to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or (status = 'active' and confidentiality = 'internal')
+);
+create policy datasets_admin_all on public.datasets
+for all to authenticated
+using (public.current_academy_role() = 'admin')
+with check (public.current_academy_role() = 'admin');
+
+create policy dataset_versions_admin_all on public.dataset_versions
+for all to authenticated
+using (public.current_academy_role() = 'admin')
+with check (public.current_academy_role() = 'admin');
+
+create policy dashboards_read_visible on public.dashboards
+for select to authenticated
+using (
+  public.current_academy_role() = 'admin'
+  or (is_published and confidentiality = 'internal')
+);
+create policy dashboards_admin_all on public.dashboards
+for all to authenticated
+using (public.current_academy_role() = 'admin')
+with check (public.current_academy_role() = 'admin');
+
+create policy audit_logs_admin_read on public.audit_logs
+for select to authenticated
+using (public.current_academy_role() = 'admin');
+-- Audit records are written only by trusted server-side functions.
+
+-- AI source/chunk tables are admin-only until source-level authorization is enforced
+-- by the future retrieval service. This intentionally fails closed.
+create policy ai_documents_admin_all on public.ai_documents
+for all to authenticated
+using (public.current_academy_role() = 'admin')
+with check (public.current_academy_role() = 'admin');
+create policy ai_chunks_admin_all on public.ai_chunks
+for all to authenticated
+using (public.current_academy_role() = 'admin')
+with check (public.current_academy_role() = 'admin');
+
+create policy ai_runs_read_own_or_admin on public.ai_runs
+for select to authenticated
+using (user_id = auth.uid() or public.current_academy_role() = 'admin');
+-- AI execution records are created only by trusted server-side functions.
+
+create policy ai_feedback_own on public.ai_feedback
+for all to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
+-- Keep SECURITY DEFINER helpers callable by authenticated sessions only.
+revoke all on function public.current_academy_role() from public, anon;
+revoke all on function public.is_academy_staff() from public, anon;
+grant execute on function public.current_academy_role() to authenticated;
+grant execute on function public.is_academy_staff() to authenticated;
+
+-- Private file bucket. Access is mediated by Storage RLS and the documents table.
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values ('portal-documents','portal-documents',false,52428800,
  array['application/pdf','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/msword','application/vnd.openxmlformats-officedocument.presentationml.presentation','application/vnd.ms-powerpoint','text/csv','image/png','image/jpeg','image/webp'])
-on conflict (id) do nothing;
+on conflict (id) do update set
+ public = false,
+ file_size_limit = excluded.file_size_limit,
+ allowed_mime_types = excluded.allowed_mime_types;
 
-create policy portal_documents_staff_upload on storage.objects for insert to authenticated
- with check (bucket_id='portal-documents' and public.is_academy_staff() and (storage.foldername(name))[1]=auth.uid()::text);
-create policy portal_documents_read_authorized on storage.objects for select to authenticated
- using (
-  bucket_id='portal-documents' and (
-   public.current_academy_role()='admin' or exists (
-    select 1 from public.documents d
-    where d.file_path=name and (
-      (d.status='published' and d.confidentiality='internal') or d.owner_id=auth.uid()
+drop policy if exists portal_documents_staff_upload on storage.objects;
+drop policy if exists portal_documents_read_authorized on storage.objects;
+drop policy if exists portal_documents_admin_delete on storage.objects;
+
+create policy portal_documents_staff_upload on storage.objects
+for insert to authenticated
+with check (
+  bucket_id = 'portal-documents'
+  and public.is_academy_staff()
+  and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+create policy portal_documents_read_authorized on storage.objects
+for select to authenticated
+using (
+  bucket_id = 'portal-documents'
+  and (
+    public.current_academy_role() = 'admin'
+    or exists (
+      select 1
+      from public.documents d
+      where d.file_path = storage.objects.name
+        and (
+          d.owner_id = auth.uid()
+          or (d.status = 'published' and d.confidentiality = 'internal')
+        )
     )
-   )
   )
- );
-create policy portal_documents_admin_delete on storage.objects for delete to authenticated
- using (bucket_id='portal-documents' and public.current_academy_role()='admin');
+);
+
+create policy portal_documents_admin_delete on storage.objects
+for delete to authenticated
+using (
+  bucket_id = 'portal-documents'
+  and public.current_academy_role() = 'admin'
+);
