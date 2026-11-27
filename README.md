@@ -43,3 +43,31 @@
 - Do not trust UI role checks; database policies are authoritative.
 - Restrict file types and size; scan uploaded files before production use.
 - Define retention and backup policies for datasets and documents.
+
+
+## مدیریت کاربران از داخل پرتال
+
+ماژول مدیریت کاربران از طریق Edge Function امن `admin-users` کار می‌کند؛ کلید service-role فقط در Secrets سمت Supabase قرار می‌گیرد و هرگز به مرورگر یا GitHub Pages ارسال نمی‌شود.
+
+### استقرار یک‌باره Edge Function
+
+پیش‌نیاز: Supabase CLI روی سیستم و دسترسی مالک/مدیر پروژه.
+
+```bash
+supabase login
+supabase link --project-ref tihmefrvlstiskdygwlb
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
+supabase functions deploy admin-users
+```
+
+- مقدار `YOUR_SERVICE_ROLE_KEY` را فقط در ترمینال خودت جایگزین کن؛ آن را در چت، فایل یا GitHub قرار نده.
+- `SUPABASE_URL` و `SUPABASE_ANON_KEY` در محیط Edge Function به‌صورت پیش‌فرض در دسترس‌اند.
+- Origin مجاز فعلی تابع `https://irmosaka.github.io` است و redirect دعوت‌نامه روی `https://irmosaka.github.io/AV-Marketing-Academy/` تنظیم شده است.
+- در Supabase Dashboard > Authentication > URL Configuration مطمئن شو آدرس `https://irmosaka.github.io/AV-Marketing-Academy/` در Redirect URLs وجود دارد.
+- ارسال دعوت‌نامه به SMTP/Email Provider فعال و قابل تحویل در پروژه Supabase نیاز دارد. اگر ایمیل ارسال نشود، ابتدا SMTP و قالب Invite User را بررسی کن.
+- مدیر واردشده از پنل سایت می‌تواند فهرست کاربران را ببیند، کاربر جدید دعوت کند و نقش سایر کاربران را تغییر دهد. تغییر نقش حساب خودش و تنزل آخرین مدیر عمداً مسدود شده است.
+- تابع برای هر درخواست JWT را اعتبارسنجی می‌کند و نقش `admin` را مستقیماً از جدول `profiles` می‌خواند؛ پنهان‌بودن دکمه در UI به‌تنهایی مبنای امنیت نیست.
+
+### نکته دیتابیس
+
+این قابلیت از جدول و enum موجود `profiles` / `academy_role` و سه نقش `learner`, `instructor`, `admin` استفاده می‌کند. برای افزودن این ماژول، جدول جدید یا تغییر enum لازم نیست. Migration قبلی را برای این قابلیت دوباره اجرا نکن؛ ابتدا Edge Function را Deploy و سپس از حساب مدیر وارد سایت شو و تست کن.
