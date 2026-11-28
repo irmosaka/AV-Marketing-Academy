@@ -16,29 +16,7 @@
     { id: "avatar-12", face: "👩🏻‍🦰", label: "زن ۶" }
   ];
 
-  const config = window.SUPABASE_CONFIG || {};
-  const ready = !!(
-    window.supabase &&
-    config.url &&
-    config.anonKey
-  );
-
-  if (!ready) {
-    console.error("Profile UI: Supabase configuration not found.");
-    return;
-  }
-
-  const client = window.supabase.createClient(
-    config.url,
-    config.anonKey,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    }
-  );
+  const client = window.avSupabaseClient || null;
 
   let currentUser = null;
   let preferences = {
@@ -88,10 +66,21 @@
   }
 
   async function loadPreferences() {
+    if (!client) {
+      currentUser = null;
+      applyTheme(localStorage.getItem("av-academy-theme") || "dark");
+      applyAvatar(preferences.avatar_id);
+      return;
+    }
+
     const { data: sessionData } = await client.auth.getSession();
     currentUser = sessionData?.session?.user || null;
 
-    if (!currentUser) return;
+    if (!currentUser) {
+      applyTheme(localStorage.getItem("av-academy-theme") || "dark");
+      applyAvatar(preferences.avatar_id);
+      return;
+    }
 
     const { data, error } = await client.rpc("get_my_preferences");
 
@@ -112,8 +101,8 @@
   }
 
   async function savePreferences() {
-    if (!currentUser) {
-      toast("برای ذخیره تنظیمات ابتدا وارد پرتال شوید.", true);
+    if (!client || !currentUser) {
+      toast("تنظیمات ظاهری فقط روی همین دستگاه اعمال شد؛ برای ذخیره در حساب، اتصال و ورود لازم است.", true);
       return false;
     }
 
@@ -402,6 +391,10 @@
 
   // تم تاریک را از همان ابتدا اعمال کن تا صفحه لحظه‌ای روشن نشود.
   applyTheme(localStorage.getItem("av-academy-theme") || "dark");
+  window.avProfileUiRefresh = async () => {
+    await loadPreferences();
+    applyAvatar(preferences.avatar_id);
+  };
 
   document.addEventListener("DOMContentLoaded", async () => {
     bindProfileButton();
@@ -414,14 +407,16 @@
 
   // اگر کاربر خارج شود، تنظیمات محلی پاک نمی‌شوند؛
   // ولی پس از ورود مجدد از دیتابیس خوانده خواهند شد.
-  client.auth.onAuthStateChange((_event, session) => {
-  currentUser = session?.user || null;
-
-  if (currentUser) {
-    setTimeout(() => {
-      loadPreferences().then(() => {
+  if (client) {
+    client.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user || null;
+      if (currentUser) {
+        setTimeout(() => {
+          loadPreferences().then(() => applyAvatar(preferences.avatar_id));
+        }, 0);
+      } else {
+        preferences.avatar_id = "avatar-01";
         applyAvatar(preferences.avatar_id);
-      });
-    }, 0);
+      }
+    });
   }
-});
