@@ -30,7 +30,16 @@
   </nav>
   <div class="side-caption side-caption-bottom">مدیریت سامانه</div>
   <nav class="main-nav"><button id="adminNav" class="nav-link" data-route="admin"><i>⚙</i><span>پنل مدیریت</span></button></nav>
-  <div class="sidebar-bottom"><div class="user-profile"><div class="user-avatar" id="userAvatar">A</div><div class="user-meta"><b id="userName">کاربر پرتال</b><small id="userRole">کاربر داخلی</small></div><button id="logoutBtn" class="logout-btn" title="خروج">↪</button></div><div class="side-version">AV INTELLIGENCE <span>v2.0</span></div></div>
+  <div class="sidebar-bottom"><div class="user-profile">
+  <div class="user-avatar" id="userAvatar">A</div>
+  <div class="user-meta">
+    <b id="userName">کاربر پرتال</b>
+    <small id="userRole">کاربر داخلی</small>
+  </div>
+  <button id="profileSettingsBtn" class="profile-settings-btn"
+    type="button" title="تنظیمات پروفایل" aria-label="تنظیمات پروفایل">⚙</button>
+  <button id="logoutBtn" class="logout-btn" title="خروج">↪</button>
+</div><div class="side-version">AV INTELLIGENCE <span>v2.0</span></div></div>
  </aside>
  <div id="scrim" class="scrim"></div>
  <main class="main-area">
@@ -65,4 +74,5 @@
  </main>
 </div>
 <div id="modalRoot" class="modal-root hidden" aria-hidden="true"></div><div id="toast" class="toast" role="status" aria-live="polite"></div>
+ <script defer src="profile-ui.js"></script>
 </body></html>
