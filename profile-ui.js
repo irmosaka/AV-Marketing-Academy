@@ -280,10 +280,13 @@
   }
 
   function bindProfileButton() {
-    const profileArea = $(".user-profile");
-    if (!profileArea || $("#profileSettingsBtn")) return;
+  const profileArea = $(".user-profile");
+  if (!profileArea) return;
 
-    const button = document.createElement("button");
+  let button = $("#profileSettingsBtn");
+
+  if (!button) {
+    button = document.createElement("button");
     button.id = "profileSettingsBtn";
     button.type = "button";
     button.className = "profile-settings-btn";
@@ -297,9 +300,13 @@
     } else {
       profileArea.appendChild(button);
     }
-
-    button.addEventListener("click", openProfileModal);
   }
+
+  if (button.dataset.bound !== "true") {
+    button.addEventListener("click", openProfileModal);
+    button.dataset.bound = "true";
+  }
+}
 
   function setupPrintButton() {
     const root = $("#modalRoot");
@@ -407,12 +414,14 @@
 
   // اگر کاربر خارج شود، تنظیمات محلی پاک نمی‌شوند؛
   // ولی پس از ورود مجدد از دیتابیس خوانده خواهند شد.
-  client.auth.onAuthStateChange(async (_event, session) => {
-    currentUser = session?.user || null;
-    if (currentUser) {
-      await loadPreferences();
-      applyAvatar(preferences.avatar_id);
-    }
-  });
+  client.auth.onAuthStateChange((_event, session) => {
+  currentUser = session?.user || null;
 
-})();
+  if (currentUser) {
+    setTimeout(() => {
+      loadPreferences().then(() => {
+        applyAvatar(preferences.avatar_id);
+      });
+    }, 0);
+  }
+});
